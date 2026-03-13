@@ -28,6 +28,8 @@ const inputTotalDebt = document.getElementById("inputTotalDebt");
 const inputLenders = document.getElementById("inputLenders");
 const inputMaxRate = document.getElementById("inputMaxRate");
 const inputMonthlyPay = document.getElementById("inputMonthlyPay");
+const addDebtRow = document.getElementById("addDebtRow");
+const debtRows = document.getElementById("debtRows");
 const leadTotalDebt = document.getElementById("leadTotalDebt");
 const leadLenders = document.getElementById("leadLenders");
 const leadMaxRate = document.getElementById("leadMaxRate");
@@ -35,8 +37,56 @@ const leadMonthlyPay = document.getElementById("leadMonthlyPay");
 const leadSavingsRate = document.getElementById("leadSavingsRate");
 const leadCashflowChange = document.getElementById("leadCashflowChange");
 const leadEstInterest = document.getElementById("leadEstInterest");
+const leadDebtItems = document.getElementById("leadDebtItems");
 
 let lastSimulation = null;
+
+const createDebtRow = () => {
+  const row = document.createElement("div");
+  row.className = "grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.6fr]";
+  row.innerHTML = `
+    <input type="text" placeholder="금융기관" class="debt-lender rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100" />
+    <input type="number" min="0" step="0.1" placeholder="잔액(억)" class="debt-amount rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100" />
+    <input type="number" min="0" step="0.1" placeholder="금리(%)" class="debt-rate rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100" />
+    <input type="number" min="0" step="1" placeholder="만기(개월)" class="debt-term rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100" />
+    <select class="debt-type rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100">
+      <option value="">구분</option>
+      <option value="secured">담보</option>
+      <option value="unsecured">신용</option>
+      <option value="policy">정책</option>
+    </select>
+  `;
+  return row;
+};
+
+const parseDebtRows = () => {
+  if (!debtRows) {
+    return { items: [], totalDebt: 0, maxRate: 0, lenders: 0 };
+  }
+
+  const rows = Array.from(debtRows.children);
+  const items = rows
+    .map((row) => {
+      const lender = row.querySelector(".debt-lender")?.value.trim() || "";
+      const amount = Number(row.querySelector(".debt-amount")?.value || 0);
+      const rate = Number(row.querySelector(".debt-rate")?.value || 0);
+      const term = Number(row.querySelector(".debt-term")?.value || 0);
+      const type = row.querySelector(".debt-type")?.value || "";
+      return {
+        lender,
+        amount,
+        rate,
+        term,
+        type,
+      };
+    })
+    .filter((item) => item.amount > 0 || item.rate > 0 || item.lender);
+
+  const totalDebt = items.reduce((sum, item) => sum + (item.amount || 0), 0);
+  const maxRate = items.reduce((max, item) => Math.max(max, item.rate || 0), 0);
+  const lenders = items.length;
+  return { items, totalDebt, maxRate, lenders };
+};
 
 const trackEvent = (eventName, params = {}) => {
   if (typeof window.gtag !== "function") {
@@ -93,9 +143,10 @@ const runSimulation = () => {
     return;
   }
 
-  const totalDebt = Number(inputTotalDebt.value || 0);
-  const lenders = Number(inputLenders.value || 0);
-  const maxRate = Number(inputMaxRate.value || 0);
+  const parsed = parseDebtRows();
+  const totalDebt = parsed.totalDebt > 0 ? parsed.totalDebt : Number(inputTotalDebt.value || 0);
+  const lenders = parsed.lenders > 0 ? parsed.lenders : Number(inputLenders.value || 0);
+  const maxRate = parsed.maxRate > 0 ? parsed.maxRate : Number(inputMaxRate.value || 0);
   const monthlyPay = Number(inputMonthlyPay.value || 0);
 
   if (totalDebt < 1 || totalDebt > 10000) {
@@ -124,6 +175,7 @@ const runSimulation = () => {
     lenders,
     max_rate: maxRate,
     monthly_pay: monthlyPay,
+    has_detail: parsed.items.length > 0,
   });
   runSimBtn.dataset.loading = "true";
   runSimBtn.classList.add("opacity-80");
@@ -193,6 +245,7 @@ const runSimulation = () => {
           monthly_pay: monthlyPay,
           savings_rate: lastSimulation.savingsRate,
           cashflow_change: lastSimulation.cashflowChange,
+          has_detail: parsed.items.length > 0,
         });
         runComparisonAnalysis();
       }
@@ -247,6 +300,10 @@ leadForm.addEventListener("submit", (event) => {
     leadSavingsRate.value = String(lastSimulation.savingsRate);
     leadCashflowChange.value = String(lastSimulation.cashflowChange);
     leadEstInterest.value = lastSimulation.estimatedInterest;
+  }
+  if (leadDebtItems) {
+    const parsed = parseDebtRows();
+    leadDebtItems.value = parsed.items.length ? JSON.stringify(parsed.items) : "";
   }
 
   const formData = new FormData(leadForm);
@@ -305,3 +362,9 @@ const observer = new IntersectionObserver(
 revealElements.forEach((element) => {
   observer.observe(element);
 });
+
+if (addDebtRow && debtRows) {
+  addDebtRow.addEventListener("click", () => {
+    debtRows.appendChild(createDebtRow());
+  });
+}

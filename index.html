@@ -217,6 +217,125 @@
                 />
               </label>
             </div>
+            <div class="mt-6">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-slate-200">상세 채무 항목</p>
+                <button
+                  type="button"
+                  id="addDebtRow"
+                  class="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/20"
+                >
+                  항목 추가
+                </button>
+              </div>
+              <p class="mt-1 text-xs text-slate-500">
+                상세 항목을 입력하면 총 채무/최고 금리가 자동 계산됩니다.
+              </p>
+              <div class="mt-4 space-y-3" id="debtRows">
+                <div class="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.6fr]">
+                  <input
+                    type="text"
+                    placeholder="금융기관"
+                    class="debt-lender rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    placeholder="잔액(억)"
+                    class="debt-amount rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    placeholder="금리(%)"
+                    class="debt-rate rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="만기(개월)"
+                    class="debt-term rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <select class="debt-type rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100">
+                    <option value="">구분</option>
+                    <option value="secured">담보</option>
+                    <option value="unsecured">신용</option>
+                    <option value="policy">정책</option>
+                  </select>
+                </div>
+                <div class="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.6fr]">
+                  <input
+                    type="text"
+                    placeholder="금융기관"
+                    class="debt-lender rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    placeholder="잔액(억)"
+                    class="debt-amount rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    placeholder="금리(%)"
+                    class="debt-rate rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="만기(개월)"
+                    class="debt-term rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <select class="debt-type rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100">
+                    <option value="">구분</option>
+                    <option value="secured">담보</option>
+                    <option value="unsecured">신용</option>
+                    <option value="policy">정책</option>
+                  </select>
+                </div>
+                <div class="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.6fr]">
+                  <input
+                    type="text"
+                    placeholder="금융기관"
+                    class="debt-lender rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    placeholder="잔액(억)"
+                    class="debt-amount rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    placeholder="금리(%)"
+                    class="debt-rate rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="만기(개월)"
+                    class="debt-term rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
+                  />
+                  <select class="debt-type rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100">
+                    <option value="">구분</option>
+                    <option value="secured">담보</option>
+                    <option value="unsecured">신용</option>
+                    <option value="policy">정책</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
@@ -576,6 +695,7 @@
               <input type="hidden" name="savings_rate" id="leadSavingsRate" />
               <input type="hidden" name="cashflow_change" id="leadCashflowChange" />
               <input type="hidden" name="estimated_interest" id="leadEstInterest" />
+              <input type="hidden" name="debt_items" id="leadDebtItems" />
               <button
                 id="leadCta"
                 type="submit"
