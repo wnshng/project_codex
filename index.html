@@ -509,16 +509,18 @@
             >
               <label class="text-sm text-slate-300">이메일 또는 연락처</label>
               <input
-                type="email"
-                name="contact"
-                placeholder="ceo@company.com"
+                type="text"
+                name="email"
+                placeholder="ceo@company.com 또는 010-1234-5678"
                 class="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               />
+              <input type="hidden" name="_subject" value="[AI Debt Optimizer] 무료 진단 요청" />
+              <input type="hidden" name="_replyto" value="" id="leadReplyTo" />
               <input type="hidden" name="source" value="lead_form" />
               <input type="hidden" name="page" value="" id="leadPage" />
               <button
                 id="leadCta"
-                type="button"
+                type="submit"
                 class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:bg-emerald-400"
               >
                 <i data-lucide="file-text" class="h-4 w-4"></i>

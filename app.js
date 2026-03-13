@@ -15,6 +15,7 @@ const leadCta = document.getElementById("leadCta");
 const leadForm = document.getElementById("leadForm");
 const leadStatus = document.getElementById("leadStatus");
 const leadPage = document.getElementById("leadPage");
+const leadReplyTo = document.getElementById("leadReplyTo");
 const simProgress = document.getElementById("simProgress");
 const simPercent = document.getElementById("simPercent");
 const simSteps = document.getElementById("simSteps");
@@ -154,14 +155,20 @@ navCta.addEventListener("click", () => {
   trackEvent("nav_cta_click");
 });
 
-leadCta.addEventListener("click", () => {
-  const emailInput = leadForm.querySelector("input");
+leadForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const emailInput = leadForm.querySelector("input[name='email']");
+  const inputValue = emailInput ? emailInput.value.trim() : "";
+
   trackEvent("lead_cta_click", {
-    has_value: Boolean(emailInput && emailInput.value),
+    has_value: Boolean(inputValue),
   });
 
   if (leadPage) {
     leadPage.value = window.location.href;
+  }
+  if (leadReplyTo && inputValue) {
+    leadReplyTo.value = inputValue;
   }
 
   const formData = new FormData(leadForm);
