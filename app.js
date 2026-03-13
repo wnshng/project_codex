@@ -28,6 +28,15 @@ const inputTotalDebt = document.getElementById("inputTotalDebt");
 const inputLenders = document.getElementById("inputLenders");
 const inputMaxRate = document.getElementById("inputMaxRate");
 const inputMonthlyPay = document.getElementById("inputMonthlyPay");
+const leadTotalDebt = document.getElementById("leadTotalDebt");
+const leadLenders = document.getElementById("leadLenders");
+const leadMaxRate = document.getElementById("leadMaxRate");
+const leadMonthlyPay = document.getElementById("leadMonthlyPay");
+const leadSavingsRate = document.getElementById("leadSavingsRate");
+const leadCashflowChange = document.getElementById("leadCashflowChange");
+const leadEstInterest = document.getElementById("leadEstInterest");
+
+let lastSimulation = null;
 
 const trackEvent = (eventName, params = {}) => {
   if (typeof window.gtag !== "function") {
@@ -88,12 +97,34 @@ const runSimulation = () => {
   const lenders = Number(inputLenders.value || 0);
   const maxRate = Number(inputMaxRate.value || 0);
   const monthlyPay = Number(inputMonthlyPay.value || 0);
+
+  if (totalDebt < 1 || totalDebt > 10000) {
+    simStatus.textContent = "총 채무는 1~10,000억 범위로 입력해주세요.";
+    return;
+  }
+  if (lenders < 1 || lenders > 50) {
+    simStatus.textContent = "금융기관 수는 1~50 사이로 입력해주세요.";
+    return;
+  }
+  if (maxRate < 1 || maxRate > 30) {
+    simStatus.textContent = "최고 금리는 1~30% 범위로 입력해주세요.";
+    return;
+  }
+  if (monthlyPay < 0.1 || monthlyPay > totalDebt) {
+    simStatus.textContent = "월 상환 여력은 0.1억 이상이며 총 채무 이하여야 합니다.";
+    return;
+  }
   const baseInterest = Math.max(1, (totalDebt * maxRate) / 100);
   const savingsRate = Math.min(24, Math.max(8, 8 + (maxRate / 2)));
   const interestAfter = baseInterest * (1 - savingsRate / 100);
   const cashflowBoost = Math.min(18, Math.max(4, (monthlyPay / Math.max(1, totalDebt)) * 120));
 
-  trackEvent("simulation_start");
+  trackEvent("simulation_start", {
+    total_debt: totalDebt,
+    lenders,
+    max_rate: maxRate,
+    monthly_pay: monthlyPay,
+  });
   runSimBtn.dataset.loading = "true";
   runSimBtn.classList.add("opacity-80");
   simStatus.textContent = "데이터를 불러오는 중...";
@@ -146,9 +177,22 @@ const runSimulation = () => {
       if (idx === steps.length - 1) {
         runSimBtn.classList.remove("opacity-80");
         runSimBtn.dataset.loading = "false";
+        lastSimulation = {
+          totalDebt,
+          lenders,
+          maxRate,
+          monthlyPay,
+          savingsRate: Number(step.savings.replace("%", "")),
+          cashflowChange: Number(step.cashflow.replace("+", "").replace("%", "")),
+          estimatedInterest: step.interest,
+        };
         trackEvent("simulation_complete", {
-          savings_rate: step.savings,
-          cashflow_change: step.cashflow,
+          total_debt: totalDebt,
+          lenders,
+          max_rate: maxRate,
+          monthly_pay: monthlyPay,
+          savings_rate: lastSimulation.savingsRate,
+          cashflow_change: lastSimulation.cashflowChange,
         });
         runComparisonAnalysis();
       }
@@ -187,6 +231,23 @@ leadForm.addEventListener("submit", (event) => {
   if (leadReplyTo && inputValue) {
     leadReplyTo.value = inputValue;
   }
+  if (leadTotalDebt) {
+    leadTotalDebt.value = inputTotalDebt.value || "";
+  }
+  if (leadLenders) {
+    leadLenders.value = inputLenders.value || "";
+  }
+  if (leadMaxRate) {
+    leadMaxRate.value = inputMaxRate.value || "";
+  }
+  if (leadMonthlyPay) {
+    leadMonthlyPay.value = inputMonthlyPay.value || "";
+  }
+  if (lastSimulation) {
+    leadSavingsRate.value = String(lastSimulation.savingsRate);
+    leadCashflowChange.value = String(lastSimulation.cashflowChange);
+    leadEstInterest.value = lastSimulation.estimatedInterest;
+  }
 
   const formData = new FormData(leadForm);
   leadCta.disabled = true;
@@ -204,7 +265,14 @@ leadForm.addEventListener("submit", (event) => {
       if (response.ok) {
         leadStatus.textContent = "신청이 완료되었습니다. 곧 연락드리겠습니다.";
         leadForm.reset();
-        trackEvent("lead_submit_success");
+        trackEvent("lead_submit_success", {
+          total_debt: Number(inputTotalDebt.value || 0),
+          lenders: Number(inputLenders.value || 0),
+          max_rate: Number(inputMaxRate.value || 0),
+          monthly_pay: Number(inputMonthlyPay.value || 0),
+          savings_rate: lastSimulation ? lastSimulation.savingsRate : 0,
+          cashflow_change: lastSimulation ? lastSimulation.cashflowChange : 0,
+        });
       } else {
         return response.json().then(() => {
           throw new Error("Submission failed");
