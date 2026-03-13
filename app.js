@@ -24,6 +24,10 @@ const simInterest = document.getElementById("simInterest");
 const simCashflow = document.getElementById("simCashflow");
 const simSavings = document.getElementById("simSavings");
 const simSavingsBar = document.getElementById("simSavingsBar");
+const inputTotalDebt = document.getElementById("inputTotalDebt");
+const inputLenders = document.getElementById("inputLenders");
+const inputMaxRate = document.getElementById("inputMaxRate");
+const inputMonthlyPay = document.getElementById("inputMonthlyPay");
 
 const trackEvent = (eventName, params = {}) => {
   if (typeof window.gtag !== "function") {
@@ -71,10 +75,23 @@ const resetSimulation = () => {
   });
 };
 
+const formatCurrency = (value) => {
+  return `${value.toLocaleString("ko-KR")}만 원`;
+};
+
 const runSimulation = () => {
   if (runSimBtn.dataset.loading === "true") {
     return;
   }
+
+  const totalDebt = Number(inputTotalDebt.value || 0);
+  const lenders = Number(inputLenders.value || 0);
+  const maxRate = Number(inputMaxRate.value || 0);
+  const monthlyPay = Number(inputMonthlyPay.value || 0);
+  const baseInterest = Math.max(1, (totalDebt * maxRate) / 100);
+  const savingsRate = Math.min(24, Math.max(8, 8 + (maxRate / 2)));
+  const interestAfter = baseInterest * (1 - savingsRate / 100);
+  const cashflowBoost = Math.min(18, Math.max(4, (monthlyPay / Math.max(1, totalDebt)) * 120));
 
   trackEvent("simulation_start");
   runSimBtn.dataset.loading = "true";
@@ -85,25 +102,25 @@ const runSimulation = () => {
     {
       percent: 32,
       status: "채무 구조를 분해하고 금리를 정리하고 있습니다.",
-      interest: "2,900만 원",
-      cashflow: "+2.8%",
-      savings: "6%",
+      interest: formatCurrency(baseInterest * 10000),
+      cashflow: `+${(cashflowBoost * 0.4).toFixed(1)}%`,
+      savings: `${Math.max(6, savingsRate * 0.5).toFixed(0)}%`,
       highlightIndex: 0,
     },
     {
       percent: 68,
       status: "현금흐름 패턴과 리스크 구간을 분석 중입니다.",
-      interest: "2,520만 원",
-      cashflow: "+7.4%",
-      savings: "11%",
+      interest: formatCurrency((baseInterest * 0.88) * 10000),
+      cashflow: `+${(cashflowBoost * 0.7).toFixed(1)}%`,
+      savings: `${Math.max(10, savingsRate * 0.7).toFixed(0)}%`,
       highlightIndex: 1,
     },
     {
       percent: 100,
       status: "최적 상환 순서와 금리 인센티브가 적용되었습니다.",
-      interest: "2,190만 원",
-      cashflow: "+12.6%",
-      savings: "18%",
+      interest: formatCurrency(interestAfter * 10000),
+      cashflow: `+${cashflowBoost.toFixed(1)}%`,
+      savings: `${savingsRate.toFixed(0)}%`,
       highlightIndex: 2,
     },
   ];
