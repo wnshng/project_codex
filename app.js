@@ -10,6 +10,8 @@ const aiLabel = document.getElementById("aiLabel");
 const resultTag = document.getElementById("resultTag");
 const heroCta = document.getElementById("heroCta");
 const runSimBtn = document.getElementById("runSimBtn");
+const leadCta = document.getElementById("leadCta");
+const leadForm = document.getElementById("leadForm");
 const simProgress = document.getElementById("simProgress");
 const simPercent = document.getElementById("simPercent");
 const simSteps = document.getElementById("simSteps");
@@ -19,11 +21,19 @@ const simCashflow = document.getElementById("simCashflow");
 const simSavings = document.getElementById("simSavings");
 const simSavingsBar = document.getElementById("simSavingsBar");
 
+const trackEvent = (eventName, params = {}) => {
+  if (typeof window.gtag !== "function") {
+    return;
+  }
+  window.gtag("event", eventName, params);
+};
+
 const runComparisonAnalysis = () => {
   if (analyzeBtn.dataset.loading === "true") {
     return;
   }
 
+  trackEvent("comparison_analyze_start");
   analyzeBtn.dataset.loading = "true";
   analyzeSpinner.classList.remove("hidden");
   analyzeStatus.textContent = "AI 분석 중...";
@@ -39,6 +49,7 @@ const runComparisonAnalysis = () => {
     analyzeStatus.textContent = "분석 완료 · 다시 보기";
     analyzeBtn.classList.remove("opacity-80");
     analyzeBtn.dataset.loading = "false";
+    trackEvent("comparison_analyze_complete");
   }, 1400);
 };
 
@@ -61,6 +72,7 @@ const runSimulation = () => {
     return;
   }
 
+  trackEvent("simulation_start");
   runSimBtn.dataset.loading = "true";
   runSimBtn.classList.add("opacity-80");
   simStatus.textContent = "데이터를 불러오는 중...";
@@ -113,6 +125,10 @@ const runSimulation = () => {
       if (idx === steps.length - 1) {
         runSimBtn.classList.remove("opacity-80");
         runSimBtn.dataset.loading = "false";
+        trackEvent("simulation_complete", {
+          savings_rate: step.savings,
+          cashflow_change: step.cashflow,
+        });
         runComparisonAnalysis();
       }
     }, 900 * (idx + 1));
@@ -128,4 +144,12 @@ heroCta.addEventListener("click", () => {
   document.getElementById("simulation").scrollIntoView({ behavior: "smooth" });
   resetSimulation();
   runSimulation();
+  trackEvent("hero_cta_click");
+});
+
+leadCta.addEventListener("click", () => {
+  const emailInput = leadForm.querySelector("input");
+  trackEvent("lead_cta_click", {
+    has_value: Boolean(emailInput && emailInput.value),
+  });
 });
