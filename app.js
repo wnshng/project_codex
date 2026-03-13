@@ -40,8 +40,42 @@ const leadSavingsRate = document.getElementById("leadSavingsRate");
 const leadCashflowChange = document.getElementById("leadCashflowChange");
 const leadEstInterest = document.getElementById("leadEstInterest");
 const leadDebtItems = document.getElementById("leadDebtItems");
+const leadUtmSource = document.getElementById("leadUtmSource");
+const leadUtmMedium = document.getElementById("leadUtmMedium");
+const leadUtmCampaign = document.getElementById("leadUtmCampaign");
+const leadUtmContent = document.getElementById("leadUtmContent");
+const leadUtmTerm = document.getElementById("leadUtmTerm");
+const leadReferrer = document.getElementById("leadReferrer");
 
 let lastSimulation = null;
+
+const captureUtm = () => {
+  const params = new URLSearchParams(window.location.search);
+  const utm = {
+    source: params.get("utm_source") || "",
+    medium: params.get("utm_medium") || "",
+    campaign: params.get("utm_campaign") || "",
+    content: params.get("utm_content") || "",
+    term: params.get("utm_term") || "",
+  };
+
+  if (leadUtmSource) leadUtmSource.value = utm.source;
+  if (leadUtmMedium) leadUtmMedium.value = utm.medium;
+  if (leadUtmCampaign) leadUtmCampaign.value = utm.campaign;
+  if (leadUtmContent) leadUtmContent.value = utm.content;
+  if (leadUtmTerm) leadUtmTerm.value = utm.term;
+  if (leadReferrer) leadReferrer.value = document.referrer || "";
+
+  if (utm.source || utm.medium || utm.campaign || utm.content || utm.term) {
+    trackEvent("utm_captured", {
+      utm_source: utm.source,
+      utm_medium: utm.medium,
+      utm_campaign: utm.campaign,
+      utm_content: utm.content,
+      utm_term: utm.term,
+    });
+  }
+};
 
 const createDebtRow = () => {
   const row = document.createElement("div");
@@ -322,6 +356,12 @@ leadForm.addEventListener("submit", (event) => {
     has_value: Boolean(inputValue),
   });
 
+  if (!inputValue || !inputValue.includes("@")) {
+    leadStatus.textContent = "이메일 형식을 확인해주세요.";
+    trackEvent("lead_submit_invalid");
+    return;
+  }
+
   if (leadPage) {
     leadPage.value = window.location.href;
   }
@@ -451,3 +491,5 @@ if (debtRows) {
     }
   });
 }
+
+captureUtm();

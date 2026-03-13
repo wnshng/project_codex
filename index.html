@@ -595,9 +595,10 @@
             >
               <label class="text-sm text-slate-300">상세 리포트 수신 이메일</label>
               <input
-                type="text"
+                type="email"
                 name="email"
                 placeholder="ceo@company.com"
+                required
                 class="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               />
               <input type="hidden" name="_subject" value="[AI Debt Optimizer] 무료 진단 요청" />
@@ -612,6 +613,12 @@
               <input type="hidden" name="cashflow_change" id="leadCashflowChange" />
               <input type="hidden" name="estimated_interest" id="leadEstInterest" />
               <input type="hidden" name="debt_items" id="leadDebtItems" />
+              <input type="hidden" name="utm_source" id="leadUtmSource" />
+              <input type="hidden" name="utm_medium" id="leadUtmMedium" />
+              <input type="hidden" name="utm_campaign" id="leadUtmCampaign" />
+              <input type="hidden" name="utm_content" id="leadUtmContent" />
+              <input type="hidden" name="utm_term" id="leadUtmTerm" />
+              <input type="hidden" name="referrer" id="leadReferrer" />
               <button
                 id="leadCta"
                 type="submit"
