@@ -219,11 +219,20 @@
             </div>
             <div class="mt-6">
               <div class="flex items-center justify-between">
-                <p class="text-sm font-semibold text-slate-200">상세 채무 항목</p>
+                <button
+                  type="button"
+                  id="toggleDebtDetails"
+                  class="flex items-center gap-2 text-sm font-semibold text-slate-200"
+                >
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-xs text-slate-300">
+                    +
+                  </span>
+                  상세 채무 항목 펼치기
+                </button>
                 <button
                   type="button"
                   id="addDebtRow"
-                  class="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/20"
+                  class="hidden rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/20"
                 >
                   항목 추가
                 </button>
@@ -231,109 +240,7 @@
               <p class="mt-1 text-xs text-slate-500">
                 상세 항목을 입력하면 총 채무/최고 금리가 자동 계산됩니다.
               </p>
-              <div class="mt-4 space-y-3" id="debtRows">
-                <div class="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.6fr]">
-                  <input
-                    type="text"
-                    placeholder="금융기관"
-                    class="debt-lender rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="잔액(억)"
-                    class="debt-amount rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="금리(%)"
-                    class="debt-rate rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    placeholder="만기(개월)"
-                    class="debt-term rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <select class="debt-type rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100">
-                    <option value="">구분</option>
-                    <option value="secured">담보</option>
-                    <option value="unsecured">신용</option>
-                    <option value="policy">정책</option>
-                  </select>
-                </div>
-                <div class="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.6fr]">
-                  <input
-                    type="text"
-                    placeholder="금융기관"
-                    class="debt-lender rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="잔액(억)"
-                    class="debt-amount rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="금리(%)"
-                    class="debt-rate rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    placeholder="만기(개월)"
-                    class="debt-term rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <select class="debt-type rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100">
-                    <option value="">구분</option>
-                    <option value="secured">담보</option>
-                    <option value="unsecured">신용</option>
-                    <option value="policy">정책</option>
-                  </select>
-                </div>
-                <div class="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.6fr]">
-                  <input
-                    type="text"
-                    placeholder="금융기관"
-                    class="debt-lender rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="잔액(억)"
-                    class="debt-amount rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="금리(%)"
-                    class="debt-rate rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    placeholder="만기(개월)"
-                    class="debt-term rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100"
-                  />
-                  <select class="debt-type rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-100">
-                    <option value="">구분</option>
-                    <option value="secured">담보</option>
-                    <option value="unsecured">신용</option>
-                    <option value="policy">정책</option>
-                  </select>
-                </div>
+              <div class="mt-4 hidden space-y-3" id="debtRows">
               </div>
             </div>
           </div>
@@ -390,6 +297,15 @@
                 <p class="mt-3 text-xs text-slate-500">
                   AI가 고금리/만기 순서를 재배치하여 이자 비용을 줄입니다.
                 </p>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+              <p class="text-sm font-semibold text-slate-200">우선 상환 추천 순서</p>
+              <p class="mt-1 text-xs text-slate-400">금리와 만기를 고려해 정렬된 결과입니다.</p>
+              <div class="mt-4 space-y-3 text-sm" id="priorityList">
+                <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-300">
+                  상세 항목을 입력하면 추천 순서가 표시됩니다.
+                </div>
               </div>
             </div>
           </div>

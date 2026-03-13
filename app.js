@@ -30,6 +30,8 @@ const inputMaxRate = document.getElementById("inputMaxRate");
 const inputMonthlyPay = document.getElementById("inputMonthlyPay");
 const addDebtRow = document.getElementById("addDebtRow");
 const debtRows = document.getElementById("debtRows");
+const toggleDebtDetails = document.getElementById("toggleDebtDetails");
+const priorityList = document.getElementById("priorityList");
 const leadTotalDebt = document.getElementById("leadTotalDebt");
 const leadLenders = document.getElementById("leadLenders");
 const leadMaxRate = document.getElementById("leadMaxRate");
@@ -55,6 +57,9 @@ const createDebtRow = () => {
       <option value="unsecured">신용</option>
       <option value="policy">정책</option>
     </select>
+    <button type="button" class="remove-debt-row rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200 md:col-span-5">
+      항목 삭제
+    </button>
   `;
   return row;
 };
@@ -86,6 +91,44 @@ const parseDebtRows = () => {
   const maxRate = items.reduce((max, item) => Math.max(max, item.rate || 0), 0);
   const lenders = items.length;
   return { items, totalDebt, maxRate, lenders };
+};
+
+const renderPriorityList = (items) => {
+  if (!priorityList) {
+    return;
+  }
+  if (!items.length) {
+    priorityList.innerHTML = `
+      <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-300">
+        상세 항목을 입력하면 추천 순서가 표시됩니다.
+      </div>
+    `;
+    return;
+  }
+
+  const sorted = [...items].sort((a, b) => {
+    if (b.rate !== a.rate) {
+      return b.rate - a.rate;
+    }
+    return (a.term || 999) - (b.term || 999);
+  });
+
+  priorityList.innerHTML = sorted
+    .map((item, idx) => {
+      return `
+        <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-emerald-300">${idx + 1}순위</span>
+            <span class="text-xs text-slate-400">${item.type || "일반"}</span>
+          </div>
+          <div class="mt-2 text-sm font-semibold">${item.lender || "금융기관"}</div>
+          <div class="mt-1 text-xs text-slate-400">
+            잔액 ${item.amount || 0}억 · 금리 ${item.rate || 0}% · 만기 ${item.term || 0}개월
+          </div>
+        </div>
+      `;
+    })
+    .join("");
 };
 
 const trackEvent = (eventName, params = {}) => {
@@ -247,6 +290,7 @@ const runSimulation = () => {
           cashflow_change: lastSimulation.cashflowChange,
           has_detail: parsed.items.length > 0,
         });
+        renderPriorityList(parsed.items);
         runComparisonAnalysis();
       }
     }, 900 * (idx + 1));
@@ -366,5 +410,44 @@ revealElements.forEach((element) => {
 if (addDebtRow && debtRows) {
   addDebtRow.addEventListener("click", () => {
     debtRows.appendChild(createDebtRow());
+  });
+}
+
+if (toggleDebtDetails && debtRows && addDebtRow) {
+  let isOpen = false;
+  toggleDebtDetails.addEventListener("click", () => {
+    isOpen = !isOpen;
+    debtRows.classList.toggle("hidden", !isOpen);
+    addDebtRow.classList.toggle("hidden", !isOpen);
+    if (isOpen && debtRows.children.length === 0) {
+      debtRows.appendChild(createDebtRow());
+    }
+    toggleDebtDetails.innerHTML = isOpen
+      ? `<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-xs text-slate-300">-</span> 상세 채무 항목 접기`
+      : `<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-xs text-slate-300">+</span> 상세 채무 항목 펼치기`;
+  });
+}
+
+if (debtRows) {
+  debtRows.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target && target.classList.contains("remove-debt-row")) {
+      const row = target.closest("div");
+      if (row) {
+        row.remove();
+      }
+    }
+  });
+  debtRows.addEventListener("input", () => {
+    const parsed = parseDebtRows();
+    if (parsed.totalDebt > 0) {
+      inputTotalDebt.value = parsed.totalDebt.toFixed(1);
+    }
+    if (parsed.maxRate > 0) {
+      inputMaxRate.value = parsed.maxRate.toFixed(1);
+    }
+    if (parsed.lenders > 0) {
+      inputLenders.value = String(parsed.lenders);
+    }
   });
 }
