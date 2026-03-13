@@ -13,6 +13,8 @@ const heroCta = document.getElementById("heroCta");
 const runSimBtn = document.getElementById("runSimBtn");
 const leadCta = document.getElementById("leadCta");
 const leadForm = document.getElementById("leadForm");
+const leadStatus = document.getElementById("leadStatus");
+const leadPage = document.getElementById("leadPage");
 const simProgress = document.getElementById("simProgress");
 const simPercent = document.getElementById("simPercent");
 const simSteps = document.getElementById("simSteps");
@@ -157,6 +159,42 @@ leadCta.addEventListener("click", () => {
   trackEvent("lead_cta_click", {
     has_value: Boolean(emailInput && emailInput.value),
   });
+
+  if (leadPage) {
+    leadPage.value = window.location.href;
+  }
+
+  const formData = new FormData(leadForm);
+  leadCta.disabled = true;
+  leadCta.classList.add("opacity-70");
+  leadStatus.textContent = "전송 중입니다...";
+
+  fetch(leadForm.action, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: formData,
+  })
+    .then((response) => {
+      if (response.ok) {
+        leadStatus.textContent = "신청이 완료되었습니다. 곧 연락드리겠습니다.";
+        leadForm.reset();
+        trackEvent("lead_submit_success");
+      } else {
+        return response.json().then(() => {
+          throw new Error("Submission failed");
+        });
+      }
+    })
+    .catch(() => {
+      leadStatus.textContent = "전송에 실패했습니다. 잠시 후 다시 시도해주세요.";
+      trackEvent("lead_submit_error");
+    })
+    .finally(() => {
+      leadCta.disabled = false;
+      leadCta.classList.remove("opacity-70");
+    });
 });
 
 const revealElements = document.querySelectorAll(".reveal");
