@@ -8,6 +8,7 @@ const currentLabel = document.getElementById("currentLabel");
 const aiBar = document.getElementById("aiBar");
 const aiLabel = document.getElementById("aiLabel");
 const resultTag = document.getElementById("resultTag");
+const navCta = document.getElementById("navCta");
 const heroCta = document.getElementById("heroCta");
 const runSimBtn = document.getElementById("runSimBtn");
 const leadCta = document.getElementById("leadCta");
@@ -145,6 +146,10 @@ heroCta.addEventListener("click", () => {
   resetSimulation();
   runSimulation();
   trackEvent("hero_cta_click");
+});
+
+navCta.addEventListener("click", () => {
+  trackEvent("nav_cta_click");
 });
 
 leadCta.addEventListener("click", () => {
