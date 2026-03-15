@@ -18,7 +18,7 @@ from trading_ai_system.signals.mtf_scoring import MTFSummary
 from trading_ai_system.strategy.trade_constraints import RuleEngineOutcome
 
 
-@dataclass(slots=True)
+@dataclass
 class EntryPlan:
     decision: str
     direction: str

@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from typing import Optional, Union
+
+FeatureValue = Union[float, int, bool, str, None]
+
 
 def select_sequence_feature_names() -> list[str]:
     return [
@@ -25,8 +29,8 @@ def select_sequence_feature_names() -> list[str]:
 
 
 def build_sequences(
-    rows: list[dict[str, float | int | bool | str | None]],
-    feature_names: list[str] | None = None,
+    rows: list[dict[str, FeatureValue]],
+    feature_names: Optional[list[str]] = None,
     lookback: int = 60,
 ) -> list[list[list[float]]]:
     feature_names = feature_names or select_sequence_feature_names()

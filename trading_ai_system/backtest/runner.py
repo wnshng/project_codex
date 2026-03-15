@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-@dataclass(slots=True)
+@dataclass
 class BacktestRow:
     up_probability: float
     down_probability: float
@@ -13,7 +13,7 @@ class BacktestRow:
     no_trade: bool = False
 
 
-@dataclass(slots=True)
+@dataclass
 class BacktestSummary:
     trade_count: int
     no_trade_ratio: float

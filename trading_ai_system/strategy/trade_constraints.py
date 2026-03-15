@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Optional
 
 from trading_ai_system.app.config import DEFAULT_CONFIG, SystemConfig
 from trading_ai_system.data.schemas.market import MarketContext
@@ -14,7 +15,7 @@ from trading_ai_system.strategy.rule_registry import (
 )
 
 
-@dataclass(slots=True)
+@dataclass
 class RuleEngineOutcome:
     rule_score: float
     entry_allowed: bool
@@ -37,7 +38,7 @@ class RuleEngineOutcome:
 def evaluate_trade_constraints(
     context: MarketContext,
     mtf_summary: MTFSummary,
-    registry: RuleRegistry | None = None,
+    registry: Optional[RuleRegistry] = None,
     config: SystemConfig = DEFAULT_CONFIG,
 ) -> RuleEngineOutcome:
     registry = registry or build_default_rule_registry()

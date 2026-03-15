@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Optional, Union
 
 from trading_ai_system.data.schemas.market import MarketContext, TimeframeState
 from trading_ai_system.features.feature_catalog import FEATURE_CATALOG
@@ -11,13 +12,16 @@ from trading_ai_system.strategy.risk_manager import RiskAssessment
 from trading_ai_system.strategy.trade_constraints import RuleEngineOutcome
 
 
-@dataclass(slots=True)
+FeatureValue = Union[float, int, bool, str, None]
+
+
+@dataclass
 class BuiltFeatures:
-    values: dict[str, float | int | bool | str | None]
+    values: dict[str, FeatureValue]
     active_features: list[str] = field(default_factory=list)
 
 
-def _first_available_state(context: MarketContext) -> TimeframeState | None:
+def _first_available_state(context: MarketContext) -> Optional[TimeframeState]:
     for timeframe in ("1h", "4h", "1d", "15m", "30m", "1m", "1w"):
         state = context.timeframe(timeframe)
         if state is not None:
@@ -53,9 +57,9 @@ def build_feature_row(
     context: MarketContext,
     mtf_summary: MTFSummary,
     rule_outcome: RuleEngineOutcome,
-    risk_assessment: RiskAssessment | None = None,
+    risk_assessment: Optional[RiskAssessment] = None,
 ) -> BuiltFeatures:
-    features: dict[str, float | int | bool | str | None] = {
+    features: dict[str, FeatureValue] = {
         spec.name: spec.default for spec in FEATURE_CATALOG
     }
     active_features: list[str] = []

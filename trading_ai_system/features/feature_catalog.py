@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Optional, Union
+
+FeatureValue = Optional[Union[float, int, bool, str]]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class FeatureSpec:
     name: str
     group: str
     description: str
-    default: float | int | bool | str | None = 0.0
+    default: FeatureValue = 0.0
     source_hint: str = ""
 
 
@@ -19,7 +22,7 @@ def _spec(
     group: str,
     description: str,
     *,
-    default: float | int | bool | str | None = 0.0,
+    default: FeatureValue = 0.0,
     source_hint: str = "",
 ) -> FeatureSpec:
     return FeatureSpec(

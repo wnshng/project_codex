@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 
 def classify_future_return(
     future_return: float,
     *,
     up_threshold: float,
-    down_threshold: float | None = None,
+    down_threshold: Optional[float] = None,
 ) -> str:
     down_threshold = down_threshold if down_threshold is not None else up_threshold
     if future_return >= up_threshold:

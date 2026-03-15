@@ -23,7 +23,7 @@ from trading_ai_system.strategy.trade_constraints import (
 )
 
 
-@dataclass(slots=True)
+@dataclass
 class FinalPrediction:
     probabilities: dict[str, float]
     predicted_class: str

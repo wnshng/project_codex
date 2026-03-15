@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional, Union
 
 from trading_ai_system.app.constants import MAX_TIMEFRAME_COMPONENT_SCORE
 
-Scalar = float | int | bool | str | None
+Scalar = Union[float, int, bool, str, None]
 
 _TF_ALIASES = {
     "1w": "1w",
@@ -27,7 +27,7 @@ def canonical_timeframe(timeframe: str) -> str:
     return _TF_ALIASES.get(timeframe.strip().lower(), timeframe.strip().lower())
 
 
-@dataclass(slots=True)
+@dataclass
 class TimeframeState:
     timeframe: str
     trend_score: float = 0.0
@@ -87,7 +87,7 @@ class TimeframeState:
         return bool(value)
 
 
-@dataclass(slots=True)
+@dataclass
 class ModelProbabilities:
     model_name: str
     up: float
@@ -125,14 +125,14 @@ class ModelProbabilities:
         }
 
 
-@dataclass(slots=True)
+@dataclass
 class MarketContext:
     symbol: str
     asset_type: str
     exchange: str
     mode: str
-    current_price: float | None = None
-    timestamp: str | None = None
+    current_price: Optional[float] = None
+    timestamp: Optional[str] = None
     timeframes: dict[str, TimeframeState] = field(default_factory=dict)
     strategy_state: dict[str, Scalar] = field(default_factory=dict)
     model_outputs: dict[str, ModelProbabilities] = field(default_factory=dict)
@@ -142,7 +142,7 @@ class MarketContext:
             canonical_timeframe(name): state for name, state in self.timeframes.items()
         }
 
-    def timeframe(self, timeframe: str) -> TimeframeState | None:
+    def timeframe(self, timeframe: str) -> Optional[TimeframeState]:
         return self.timeframes.get(canonical_timeframe(timeframe))
 
     def get_state_float(self, key: str, default: float = 0.0) -> float:

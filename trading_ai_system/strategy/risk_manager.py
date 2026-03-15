@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Optional
 
 from trading_ai_system.app.config import DEFAULT_CONFIG, SystemConfig
 from trading_ai_system.data.schemas.market import MarketContext
@@ -10,13 +11,13 @@ from trading_ai_system.signals.mtf_scoring import MTFSummary
 from trading_ai_system.strategy.trade_constraints import RuleEngineOutcome
 
 
-@dataclass(slots=True)
+@dataclass
 class RiskAssessment:
     risk_grade: str
     risk_points: int
     max_loss_pct: float
-    position_notional: float | None
-    position_fraction: float | None
+    position_notional: Optional[float]
+    position_fraction: Optional[float]
     warnings: list[str] = field(default_factory=list)
 
 

@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Callable
+from typing import Callable, Optional
 
 from trading_ai_system.app.config import DEFAULT_CONFIG, SystemConfig
 from trading_ai_system.data.schemas.market import MarketContext
 from trading_ai_system.signals.mtf_scoring import MTFSummary
 
 
-@dataclass(slots=True)
+@dataclass
 class RuleResult:
     name: str
     category: str
@@ -19,14 +19,14 @@ class RuleResult:
     score_impact: float
     hard_filter: bool
     hard_block: bool
-    reason: str | None = None
+    reason: Optional[str] = None
     metadata: dict[str, object] = field(default_factory=dict)
 
 
 RuleEvaluator = Callable[["Rule", MarketContext, MTFSummary, SystemConfig], RuleResult]
 
 
-@dataclass(slots=True)
+@dataclass
 class Rule:
     name: str
     category: str
@@ -43,7 +43,7 @@ class Rule:
         return self.evaluator(self, context, mtf_summary, config)
 
 
-@dataclass(slots=True)
+@dataclass
 class RuleRegistry:
     rules: list[Rule]
 
@@ -59,11 +59,11 @@ class RuleRegistry:
 def _make_result(
     rule: Rule,
     passed: bool,
-    reason: str | None = None,
+    reason: Optional[str] = None,
     *,
-    metadata: dict[str, object] | None = None,
-    hard_block: bool | None = None,
-    score_impact: float | None = None,
+    metadata: Optional[dict[str, object]] = None,
+    hard_block: Optional[bool] = None,
+    score_impact: Optional[float] = None,
 ) -> RuleResult:
     if score_impact is None:
         score_impact = abs(rule.score_weight) if passed else -abs(rule.score_weight)

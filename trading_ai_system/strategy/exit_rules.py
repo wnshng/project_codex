@@ -8,7 +8,7 @@ from trading_ai_system.data.schemas.market import MarketContext
 from trading_ai_system.signals.mtf_scoring import MTFSummary
 
 
-@dataclass(slots=True)
+@dataclass
 class ExitPlan:
     stop_loss_policy: dict[str, object]
     take_profit_plan: list[dict[str, object]] = field(default_factory=list)

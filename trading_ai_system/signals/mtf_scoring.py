@@ -10,7 +10,7 @@ from trading_ai_system.app.constants import CLASS_DOWN, CLASS_SIDE, CLASS_UP
 from trading_ai_system.data.schemas.market import MarketContext, TimeframeState
 
 
-@dataclass(slots=True)
+@dataclass
 class TimeframeScore:
     timeframe: str
     raw_score: float
@@ -22,7 +22,7 @@ class TimeframeScore:
     notes: list[str] = field(default_factory=list)
 
 
-@dataclass(slots=True)
+@dataclass
 class MTFSummary:
     timeframe_scores: dict[str, TimeframeScore]
     composite_score: float
@@ -45,9 +45,9 @@ def _score_timeframe(timeframe: str, state: TimeframeState, weight: float) -> Ti
     weighted_score = state.normalized_score * weight * state.confidence
     notes = list(state.notes)
     if state.bias == "bull":
-        notes.append(f"{timeframe} bullish structure")
+        notes.append(f"{timeframe} 상승 구조")
     elif state.bias == "bear":
-        notes.append(f"{timeframe} bearish structure")
+        notes.append(f"{timeframe} 하락 구조")
     return TimeframeScore(
         timeframe=timeframe,
         raw_score=state.raw_score,
@@ -69,7 +69,7 @@ def _score_sign(value: float) -> int:
 
 
 def _derive_regime(composite_score: float, warnings: list[str]) -> str:
-    if any("event volatility" in warning.lower() for warning in warnings):
+    if any("이벤트 변동성" in warning for warning in warnings):
         return "event_risk"
     absolute = abs(composite_score)
     if absolute < 0.12:
@@ -115,14 +115,14 @@ def compute_mtf_summary(
     caution_penalty = 0.0
     if context.get_state_bool("overlapping_target_zone") or context.get_state_bool("caution_zone_flag"):
         caution_penalty += config.caution_zone_penalty
-        warnings.append("Overlapping target zone detected")
+        warnings.append("중첩 타겟 구간이 감지되었습니다.")
     if context.get_state_bool("lower_tf_conflict_flag"):
         caution_penalty += config.lower_tf_conflict_penalty
-        warnings.append("Lower timeframe noise conflict detected")
+        warnings.append("하위 프레임 잡음 충돌이 감지되었습니다.")
 
     event_risk = context.get_state_str("event_volatility_risk").lower()
     if event_risk in {"high", "extreme"}:
-        warnings.append("Event volatility risk is elevated")
+        warnings.append("이벤트 변동성 경계 구간입니다.")
 
     composite_score += alignment_bonus
     composite_score -= conflict_penalty + caution_penalty

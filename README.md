@@ -12,6 +12,11 @@
 - LSTM용 sequence/label helper
 - Streamlit 데모 대시보드
 - 규칙 on/off를 비교할 수 있는 간단한 백테스트 러너
+- 통합 종목 Resolver
+- TradingView 실제 차트 / KRX 내부 캔들차트 / Plotly 예상 차트 분리
+- 글렌닐리 구조 기반 추천 진입 근거 카드
+- 추천 타겟/손절/손익비 2:1 필터 자동 시뮬레이션
+- 잔고 / 거래 이력 관리
 
 ## 문서 반영 포인트
 
@@ -54,9 +59,13 @@
 ## 빠른 실행
 
 ```bash
-python3 -m pytest tests
+pip install -r requirements.txt
 streamlit run run_streamlit.py
 ```
+
+## 추가 문서
+
+- `docs/시스템_고도화_설계.md`
 
 ## 다음 구현 권장 순서
 
